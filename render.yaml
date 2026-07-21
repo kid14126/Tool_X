@@ -1,0 +1,16 @@
+# Alternative to Railway: https://render.com — New Blueprint → this file
+services:
+  - type: web
+    name: tool-x
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_PATH_BIN
+        value: /usr/local/bin/node
+      - key: CORS_ORIGIN
+        value: "*"
+    disk:
+      name: toolx-data
+      mountPath: /app/data
+      sizeGB: 1

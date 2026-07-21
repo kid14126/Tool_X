@@ -2,7 +2,11 @@ node_modules
 .next
 data
 .git
-*.md
-.env*
-Dockerfile
-docker-compose.yml
+.env
+.env.*
+*.log
+.DS_Store
+cookies*.txt
+data/cookies
+coverage
+.vercel
