@@ -1,16 +1,28 @@
-# Alternative to Railway: https://render.com — New Blueprint → this file
+# Render Blueprint — https://dashboard.render.com/blueprints
+# Repo: https://github.com/kid14126/Tool_X
 services:
   - type: web
     name: tool-x
     runtime: docker
     plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     healthCheckPath: /api/health
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: NODE_PATH_BIN
         value: /usr/local/bin/node
+      - key: YTDLP_PATH
+        value: /usr/local/bin/yt-dlp
+      - key: FFMPEG_PATH
+        value: /usr/bin/ffmpeg
+      - key: FFPROBE_PATH
+        value: /usr/bin/ffprobe
       - key: CORS_ORIGIN
         value: "*"
-    disk:
-      name: toolx-data
-      mountPath: /app/data
-      sizeGB: 1
+      - key: YTDLP_IMPERSONATE
+        value: chrome
+    # Free plan: no persistent disk (cookies/jobs reset when instance sleeps/redeploys).
+    # Upgrade + add disk mount /app/data later if needed.
