@@ -1,0 +1,16 @@
+services:
+  tool-x:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - toolx-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - YTDLP_PATH=yt-dlp
+      - FFMPEG_PATH=ffmpeg
+      - FFPROBE_PATH=ffprobe
+    restart: unless-stopped
+
+volumes:
+  toolx-data:
