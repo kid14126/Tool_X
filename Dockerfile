@@ -1,9 +1,8 @@
-# Tool_X — production image for Railway / Render / Fly / any Docker host
+# Tool_X — production image for Render / Railway / Fly
 FROM node:22-bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive \
     NEXT_TELEMETRY_DISABLED=1 \
-    NODE_ENV=production \
     NODE_PATH_BIN=/usr/local/bin/node \
     YTDLP_PATH=/usr/local/bin/yt-dlp \
     FFMPEG_PATH=/usr/bin/ffmpeg \
@@ -11,7 +10,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     YTDLP_IMPERSONATE=chrome \
     PATH="/opt/venv/bin:${PATH}"
 
-# System tools: ffmpeg + python venv deps (avoid broken system pip)
+# Do NOT set NODE_ENV=production before npm ci/build —
+# otherwise devDependencies (tailwind, typescript, postcss) are skipped and `next build` fails.
+
+# System tools
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -24,7 +26,7 @@ RUN apt-get update \
   && ffmpeg -version | head -n1 \
   && python3 --version
 
-# yt-dlp + curl_cffi in isolated venv (more reliable than --break-system-packages)
+# yt-dlp + curl_cffi in venv
 RUN python3 -m venv /opt/venv \
   && /opt/venv/bin/pip install --no-cache-dir -U pip setuptools wheel \
   && /opt/venv/bin/pip install --no-cache-dir -U "yt-dlp[default]" curl_cffi \
@@ -33,21 +35,21 @@ RUN python3 -m venv /opt/venv \
 
 WORKDIR /app
 
-# Install npm deps first (better layer cache)
 COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
+# Install ALL deps including dev (needed for next build + tailwind)
+RUN npm ci --no-audit --no-fund --include=dev
 
-# App source
 COPY . .
 
 RUN mkdir -p /app/data/jobs /app/data/tmp /app/data/cookies \
   && npm run build \
   && npm prune --omit=dev
 
-ENV PORT=3000 \
+# Production runtime only after build succeeds
+ENV NODE_ENV=production \
+    PORT=3000 \
     HOSTNAME=0.0.0.0
 
 EXPOSE 3000
 
-# Railway/Render set $PORT dynamically
 CMD ["sh", "-c", "exec npm run start -- -H 0.0.0.0 -p ${PORT:-3000}"]
