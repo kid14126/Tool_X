@@ -49,14 +49,10 @@ docker compose up --build
 
 Mở http://localhost:3000
 
-### Deploy cloud (Vercel / Railway)
+### Deploy cloud (Railway — Cách 1)
 
-**Vercel serverless không chạy được yt-dlp + ffmpeg.**  
-
-Xem **[DEPLOY.md](./DEPLOY.md)**:
-
-1. **Đơn giản:** full app Docker trên **Railway** (khuyến nghị)
-2. **Hybrid:** UI **Vercel** + worker Docker Railway (`NEXT_PUBLIC_API_URL`)
+**Khuyến nghị:** full Docker trên Railway. Hướng dẫn chi tiết: **[RAILWAY.md](./RAILWAY.md)**  
+(Vercel serverless không chạy được yt-dlp + ffmpeg — xem [DEPLOY.md](./DEPLOY.md))
 
 ## Chạy dev
 
